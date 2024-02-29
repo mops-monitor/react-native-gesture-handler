@@ -132,6 +132,8 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 28)
+    buildFeatures.buildConfig true
+    namespace 'com.swmansion.gesturehandler'
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -215,9 +217,6 @@ android {
             }
         }
     }
-
-    buildFeatures.buildConfig true
-    namespace 'com.swmansion.gesturehandler'
 }
 
 def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlinVersion'])
