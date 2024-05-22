@@ -589,22 +589,24 @@ class GestureHandlerOrchestrator(
     private val matrixTransformCoords = FloatArray(2)
     private val inverseMatrix = Matrix()
     private val tempCoords = FloatArray(2)
-    private val handlersComparator = Comparator<GestureHandler<*>?> { a, b ->
-      return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
-        // both A and B are either active or awaiting activation, in which case we prefer one that
-        // has activated (or turned into "awaiting" state) earlier
-        Integer.signum(b.activationIndex - a.activationIndex)
-      } else if (a.isActive) {
-        -1 // only A is active
-      } else if (b.isActive) {
-        1 // only B is active
-      } else if (a.isAwaiting) {
-        -1 // only A is awaiting, B is inactive
-      } else if (b.isAwaiting) {
-        1 // only B is awaiting, A is inactive
-      } else {
-        0 // both A and B are inactive, stable order matters
-      }
+    private val handlersComparator = Comparator<GestureHandler<*>?> { first, second ->
+        val a = first ?: return@Comparator (second?.let { 1 } ?: 0)
+        val b = second ?: return@Comparator -1
+        return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
+            // both A and B are either active or awaiting activation, in which case we prefer one that
+            // has activated (or turned into "awaiting" state) earlier
+            Integer.signum(b.activationIndex - a.activationIndex)
+        } else if (a.isActive) {
+            -1 // only A is active
+        } else if (b.isActive) {
+            1 // only B is active
+        } else if (a.isAwaiting) {
+            -1 // only A is awaiting, B is inactive
+        } else if (b.isAwaiting) {
+            1 // only B is awaiting, A is inactive
+        } else {
+            0 // both A and B are inactive, stable order matters
+        }
     }
 
     private fun shouldHandlerlessViewBecomeTouchTarget(view: View, coords: FloatArray): Boolean {
